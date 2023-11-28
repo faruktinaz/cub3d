@@ -64,38 +64,9 @@ void draw2Dmap(t_data *data)
 	}
 }
 
-void draw_line(void *mlx_ptr, void *win_ptr, int x0, int y0, int x1, int y1)
-{
-	int dx = abs(x1 - x0);
-	int dy = abs(y1 - y0);
-	int sx = (x0 < x1) ? 1 : -1;
-	int sy = (y0 < y1) ? 1 : -1;
-	int err = dx - dy;
-
-	while (1)
-	{
-		mlx_pixel_put(mlx_ptr, win_ptr, x0, y0, 0xFFFFFF);
-
-		if (x0 == x1 && y0 == y1)
-		{
-			break;
-		}
-		int e2 = 2 * err;
-		if (e2 > -dy)
-		{
-			err = err - dy;
-			x0 = x0 + sx;
-		}
-		if (e2 < dx)
-		{
-			err = err + dx;
-			y0 = y0 + sy;
-		}
-	}
-}
 int abs(int n) { return ((n > 0) ? n : (n * (-1))); } 
   
-void DDA(int X0, int Y0, int X1, int Y1, t_data *data, int is3D)
+void DDA(int X0, int Y0, int X1, int Y1, t_data *data)
 {
     int dx = X1 - X0;
     int dy = Y1 - Y0;
@@ -108,18 +79,17 @@ void DDA(int X0, int Y0, int X1, int Y1, t_data *data, int is3D)
     float X = X0;
     float Y = Y0;
     for (int i = 0; i <= steps; i++) {
-        if (is3D == 1) {
-            for (int j = 20 - 1; j <= 20 + 15; j++) { // Kalınlık için her yöne 1 piksel kaydırma
-                for (int k = 20 - 1; k <= 20 + 1; k++) {
-                    if (i_color == 0)
-                        mlx_pixel_put(data->mlx, data->mlx_win, X + j, Y + k, 0xFF0000); // #960000
-                    else if (i_color == 1)
-                        mlx_pixel_put(data->mlx, data->mlx_win, X + j, Y + k, 0x960000); // #960000
-                }
-            }
-        } else {
-            mlx_pixel_put(data->mlx, data->mlx_win, X + 20, Y + 20, 0xFF0000);
-        }
+		if (map[(((int)(Y+20) / 64) * mapY) + (int)((X+20) / 64)] != 1)
+        	mlx_pixel_put(data->mlx, data->mlx_win, X + 20, Y + 20, 0xFF0000);
+		else
+		{
+			printf("\n\n\n *** x-> %f y-> %f\n", X, Y);
+			// EUYVAH
+			// printf("x in karesi + y nin karesinin karekoku -> %d \n",(int)sqrt(pow(data->p_x, 2) + pow((int)Y, 2)));
+			break;
+		}
+		printf("X -> %f Y -> %d\n", X+20, ((int)((Y+20) / 64 + mapY)));
+		printf("X / 64 -> %d Y -> %f\n", (int)(X+20) / 64, (Y+20) / 64);
         X += Xinc;
         Y += Yinc;
     }
@@ -130,168 +100,6 @@ float dist(float ax, float ay, float bx, float by, float ang)
 	return (sqrt((bx-ax) * (bx-ax) + (by-ay) * (by-ay)));
 }
 
-void drawRays2D(t_data *data)
-{
-    int r,mx,my,mp,dof,side; float vx,vy,rx,ry,ra,xo,yo,disV,disH, disT;
-
-    ra = pa - DR*30;
-    if (ra < 0)
-    {
-        ra+=2*PI;
-    }
-    if (ra > 2*PI)
-    {
-        ra-=2*PI;
-    }
-    for (r = 0; r < 30; r++)
-    {
-		// HORIZONTAL
-        dof = 0;
-		disH = 1000000;
-		float hx = data->p_x;
-		float hy = data->p_y;
-        float aTan = -1/tan(ra);
-        if (ra > PI)
-        {
-            ry = (((int)data->p_y >> 6) << 6) - 0.0001;
-            rx = (data->p_y - ry) * aTan + data->p_x;
-            yo = -64;
-            xo = -yo*aTan;
-        }
-        if (ra < PI)
-        {
-            ry = (((int)data->p_y >> 6) << 6) + 64;
-            rx = (data->p_y - ry) * aTan + data->p_x;
-            yo = 64;
-            xo = -yo*aTan;
-        }
-        if (ra == 0 || ra == PI)
-        {
-            rx = data->p_x;
-            ry = data->p_y;
-            dof = 8;
-        }
-        while (dof < 8)
-        {
-            mx = (int)rx >> 6;
-            my = (int)ry >> 6;
-            mp = my *mapX + mx;
-            if (mp > 0 && mp < mapX *mapY && map[mp] == 1)
-			{
-				hx = rx;
-				hy = ry;
-				disH = dist(data->p_x, data->p_y, hx, hy, ra);
-                dof = 8;
-			}
-            else
-            {
-                rx += xo;
-                ry += yo;
-                dof++;
-            }
-        }
-        ra+= DR;
-        if (ra < 0)
-            ra+=2*PI;
-        if (ra > 2*PI)
-            ra-=2*PI;
-		// VERTICAL
-        dof = 0;
-		disV = 1000000;
-		float vx = data->p_x;
-		float vy = data->p_y;
-        float nTan = -tan(ra);
-        if (ra > P2 && ra < P3)
-        {
-            rx = (((int)data->p_x >> 6) << 6) - 0.0001;
-            ry = (data->p_x - rx) * nTan + data->p_y;
-            xo = -64;
-            yo = -xo*nTan;
-        }
-        if (ra < P2 || ra > P3)
-        {
-            rx = (((int)data->p_x >> 6) << 6) + 64;
-            ry = (data->p_x - rx) * nTan + data->p_y;
-            xo = 64;
-            yo = -xo*nTan;
-        }
-        if (ra == 0 || ra == PI)
-        {
-            rx = data->p_x;
-            ry = data->p_y;
-            dof = 8;
-        }
-        while (dof < 8)
-        {
-            mx = (int)rx >> 6;
-            my = (int)ry >> 6;
-            mp = my *mapX + mx;
-            if (mp>0 && mp < mapX *mapY && map[mp] == 1)
-			{
-				vx =rx;
-				vy = ry;
-				disV = dist(data->p_x, data->p_y, vx, vy, ra);
-                dof = 8;
-			}
-            else
-            {
-                rx += xo;
-                ry += yo;
-                dof++;
-            }
-        }
-		if (disV < disH)
-		{
-			rx = vx;
-			ry = vy;
-			disT = disV;
-			i_color = 1;
-		}
-		if (disH < disV)
-		{
-			rx = hx;
-			ry = hy;
-			disT = disH;
-			i_color = 0;
-		}
-        DDA(data->p_x - 12, data->p_y - 12, rx, ry, data, 0);
-        DDA(data->p_x - 12, data->p_y - 12, rx , ry, data, 0);
-		// -----DRAW 3D WALLS-----
-		float ca=pa-ra;
-		if (ca < 0)
-            ca+=2*PI;
-        if (ca > 2*PI)
-            ca-=2*PI;
-		disT = disT*cos(ca);
-		float lineH=(mapS* 320) / disT;
-		if (lineH>320)
-			lineH = 320;
-		float lineO = 200-lineH/2;
-		DDA(r*15 + 530, lineO, r*15+530, lineH+lineO, data, 1);
-		DDA(r*15 + 530, lineO + 50, r*15+530, lineH+lineO, data, 1);
-        ra+= DR;
-        if (ra < 0)
-            ra+=2*PI;
-        if (ra > 2*PI)
-            ra-=2*PI;
-    }
-}
-
-void	draw_rays(t_data *data)
-{
-	int end_x;
-	int end_y;
-
-	for (int i = data->pl_a; i < (data->pl_a + 60); i += 5)
-	{
-		double angle = i * 6.28319 / 360;
-		int line_length = 200;
-		end_x = data->p_x + line_length * cos(angle);
-		end_y = data->p_y + line_length * sin(angle);
-
-		draw_line(data->mlx, data->mlx_win, data->p_x + 32, data->p_y + 32, end_x, end_y);
-	}
-}
 
 int	key_event(int keycode, t_data *data)
 {
@@ -299,13 +107,11 @@ int	key_event(int keycode, t_data *data)
 	{
 		data->p_y += pdy;
 		data->p_x += pdx;
-	mlx_clear_window(data->mlx, data->mlx_win);
 	}
 	else if (keycode == S)
 	{
 		data->p_y -= pdy;
 		data->p_x -= pdx;	
-	mlx_clear_window(data->mlx, data->mlx_win);
 	}
 	else if (keycode == A)
 	{
@@ -315,8 +121,6 @@ int	key_event(int keycode, t_data *data)
 		pdx = cos(pa) * 5;
 		pdy = sin(pa) * 5;
 		data->pl_a -= pa * 5 ;
-
-	mlx_clear_window(data->mlx, data->mlx_win);
 	}
 	else if (keycode == D)
 	{
@@ -326,24 +130,17 @@ int	key_event(int keycode, t_data *data)
 		pdx = cos(pa) * 5;
 		pdy = sin(pa) * 5;
 		data->pl_a += pa * 5;
-	mlx_clear_window(data->mlx, data->mlx_win);
 	}
 	else if (keycode == 34)
 	{
 		printf("\n***exit***\n\n");
 		exit(0);
 	}
+	mlx_clear_window(data->mlx, data->mlx_win);
 	draw2Dmap(data);
 	mlx_put_image_to_window(data->mlx, data->mlx_win, data->img, data->p_x, data->p_y);
-	// for (int i = 10; i < 20; i++)
-	// {
-	// 	mlx_pixel_put(data->mlx, data->mlx_win, data->p_x + (pdx * 2) + i, data->p_y + (pdy * 2) + i, 0xFFFF);
-	// 	for (int x = 10; x < 20; x++)
-	// 		mlx_pixel_put(data->mlx, data->mlx_win, data->p_x + (pdx * 2) + i, data->p_y + (pdy * 2) + x, 0x00000);
-		
-	// }
-    // DDA(data->p_x, data->p_y, data->p_x + pdx * 5, data->p_y + pdy * 5, data);
-	// draw_rays(data); yanlis caisiyo
+	DDA(data->p_x - 12 , data->p_y - 12, data->p_x + pdx * 100, data->p_y + pdy * 100, data);
+	DDA(data->p_x - 12 , data->p_y - 12, data->p_x + 50+pdx * 100, (data->p_y + 50 + pdy * 100), data);
 	return (0);
 }
 
@@ -364,12 +161,6 @@ void ft_init(t_data *data)
 	mlx_put_image_to_window(data->mlx, data->mlx_win, data->img, 16, 16);
 }
 
-int draw_map_3(t_data *data)
-{
-	drawRays2D(data);
-	return 0;
-}
-
 
 int main()
 {
@@ -383,7 +174,6 @@ int main()
 	// 		mlx_pixel_put(data->mlx, data->mlx_win, x, y, 0xFFFFFF);
 	// }
 	mlx_hook(data->mlx_win, 2, 1L << 0, &key_event, data);
-	mlx_loop_hook(data->mlx, draw_map_3, data);
 	mlx_loop(data->mlx);
 }
 
