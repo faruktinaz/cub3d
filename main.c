@@ -13,17 +13,19 @@ float px,py,pdx,pdy; // player position
 
 float pa = 1.3;
 
-int mapX=8, mapY=8, mapS=64;
+int mapX=10, mapY=10, mapS=100;
 int map[]=
 {
-	1,1,1,1,1,1,1,1,
-	1,0,0,0,1,0,0,1,
-	1,0,0,0,1,0,0,1,
-	1,0,0,0,1,0,0,1,
-	1,0,0,0,0,0,0,1,
-	1,0,1,0,0,0,0,1,
-	1,0,1,0,0,0,0,1,
-	1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,0,0,0,1,0,0,0,0,1,
+	1,0,0,0,1,0,0,0,0,1,
+	1,0,0,0,1,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,1,
+	1,0,1,0,0,0,0,0,0,1,
+	1,0,1,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,1,
+	1,1,1,1,1,1,1,1,1,1,
 };
 
 typedef struct s_texture
@@ -60,13 +62,17 @@ typedef struct s_data
 	void *c_img;
 	int *wall_direction;
 	float *distances;
+	int windowWidth;
+	int windowHeight;
 	void *enemy_img;
 	float currentAngle;
 	void *floor_img;
+	float 	*wall_X;
+	float 	*wall_Y;
 	float p_x; // player x;
 	float p_y; // player y;
 	t_image image;
-	t_texture	textures[1];
+	t_texture	textures[2];
 
 }		t_data;
 
@@ -92,27 +98,6 @@ void draw2Dmap(t_data *data)
 	}
 }
 
-void drawFloor(t_data *data) {
-    int windowWidth = 1024;
-    int windowHeight = 512;
-
-    for (int i = 512 / 2; i < 512; i+=64) {
-        for (int j = 512; j < 1060; j+= 64) {
-            mlx_put_image_to_window(data->mlx, data->mlx_win, data->floor_img, j, i);
-        }
-    }
-}
-
-void drawCeiling(t_data *data) {
-    int windowWidth = 1024;
-    int windowHeight = 512;
-
-    for (int i = 0; i < 512 / 2; i+=64) {
-        for (int j = 512; j < 1060; j+= 64) {
-            mlx_put_image_to_window(data->mlx, data->mlx_win, data->c_img, j, i);
-        }
-    }
-}
 
 void	img_pix_put(t_image *image, int x, int y, int color)
 {
@@ -141,10 +126,10 @@ unsigned int	get_pixel_in_texture(t_texture *texture, int x, int y)
 
 
 void draw3DView(t_data *data, int numRays) {
-    float wallHeight = 5000;
+    float wallHeight = data->windowHeight * 10;
 
-    int windowWidth = 1024; // upd from data 
-    int windowHeight = 512; // upd from data
+    int windowWidth = data->windowWidth; // upd from data 
+    int windowHeight = data->windowHeight; // upd from data
 
     for (int i = 0; i < numRays; i++) {
         float distanceToWall = data->distances[i];
@@ -155,28 +140,40 @@ void draw3DView(t_data *data, int numRays) {
 
         int wallCenter = windowHeight / 2;
 
-        int wallStart = wallCenter - (wallSize) * 2;
-        int wallEnd = wallCenter + (wallSize) * 2;
+        float wallStart = wallCenter - (wallSize) * 2;
+        float wallEnd = wallCenter + (wallSize) * 2;
 
         int wallThicknessStart = i - (wallThickness);
         int wallThicknessEnd = i + (wallThickness);
 
         int wallColor = 0x402414;
-
+		if (wallStart < 0)
+			wallStart = 0;
+		if (wallEnd > wallHeight)
+			wallEnd = wallHeight - 1;
+		// printf("wallsize -> %f\n", wallSize);
         for (int j = wallStart; j <= wallEnd; j++)
 		{
-            for (int k = wallThicknessStart; k <= wallThicknessEnd; k++)
+            for (int k = wallThicknessStart * 0.001670 * (windowWidth) ; k <= wallThicknessEnd * 0.001670 * (windowWidth); k++)
 			{
-				img_pix_put(&data->image, k + (windowWidth), j, 0xFFFFFF);
+				float wall_tes = (((j) - (wallStart)) * 14) / (wallSize);
+				wallColor = get_pixel_in_texture(&data->textures[0], (data->wall_X[i]) * 64, wall_tes);
+				if (data->wall_direction[i] == 1)
+					img_pix_put(&data->image, k, j, wallColor);
+				else if (data->wall_direction[i] == 3)
+					img_pix_put(&data->image, k, j, wallColor);
+				else
+				{
+					wallColor = get_pixel_in_texture(&data->textures[1], (data->wall_Y[i]) * 64, wall_tes);
+					img_pix_put(&data->image, k, j, wallColor);
+				}
 				// if (data->wall_direction[i] == 0)
 				// 	data->wall_direction[i] = data->wall_direction[i-1];
 				// if (data->wall_direction[i] == 3)
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, 0xFFFF00);
 				// else if (data->wall_direction[i] == 1)
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, 0xFF0000);
-				// else if (data->wall_direction[i] == 2)
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, 0xFFFFFF);
-				// else if (data->wall_direction[i] == 4)
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, wallColor);
             }
         }
@@ -196,15 +193,12 @@ void DDA(int X0, int Y0, int X1, int Y1, t_data *data)
 
     float Xinc = dx / (float)steps;
     float Yinc = dy / (float)steps;
-
-	float x1;
-	float y1;
 	int yon = 0;
 
 //  +20 for player pos
     float X = X0 + 20; // starting position of the line X
     float Y = Y0 + 20; // starting position of the line Y
-    for (int i = 0; i <= steps; i++) {
+    while (1) {
 		if (map[(((int)(Y) / 64) * mapY) + (int)((X) / 64)] != 1) // !wall
 				;
 			// mlx_pixel_put(data->mlx, data->mlx_win, X, Y, 0xFF0000);
@@ -230,8 +224,12 @@ void DDA(int X0, int Y0, int X1, int Y1, t_data *data)
         X += Xinc;
         Y += Yinc;
     }
-	data->distances[jd] = (sqrt(pow(data->p_x + 8 - X, 2) + pow(data->p_y + 8 - Y, 2))* cos(data->currentAngle - pa));
+	data->distances[jd] = (sqrt(pow(data->p_x + 8 - X, 2) + pow(data->p_y + 8 - Y, 2)) * cos(data->currentAngle - pa));
 	data->wall_direction[jd] = yon;
+	float cellX = (X / 64);
+	float cellY = (Y / 64);
+	data->wall_X[jd] = cellX;
+	data->wall_Y[jd] = cellY;
 	jd++;
 }
 
@@ -242,10 +240,20 @@ void put_background(t_data *data)
 
 	x = 0;
 	y = 0;
-	while (y <= 512)
+	while (y <= data->windowHeight / 2)
 	{
 		x = 0;
-		while (x <= 1024)
+		while (x <= data->windowWidth)
+		{
+			img_pix_put(&data->image, x, y, 0x2b2a26);
+			x++;
+		}
+		y++;
+	}
+	while (y <= data->windowHeight)
+	{
+		x = 0;
+		while (x <= data->windowWidth)
 		{
 			img_pix_put(&data->image, x, y, 0x000000);
 			x++;
@@ -253,7 +261,6 @@ void put_background(t_data *data)
 		y++;
 	}
 }
-
 
 
 int	key_event(int keycode, t_data *data)
@@ -313,11 +320,15 @@ int	key_event(int keycode, t_data *data)
 void ft_init(t_data *data)
 {
 	int w = 0;
-	data->p_x = 64;
-	data->p_y = 64;
+	data->p_x = 100;
+	data->p_y = 100;
 
 	data->distances = malloc(sizeof(float) * 600);
 	data->wall_direction = malloc(sizeof(int) * 600);
+	data->windowWidth = 1280;
+	data->windowHeight = 1024;
+	data->wall_X = calloc(sizeof(float), 600);
+	data->wall_Y = calloc(sizeof(float), 600);
 	pdx = 0;
 	pdy = 0;
 	data->pl_a = 0;
@@ -325,19 +336,21 @@ void ft_init(t_data *data)
 	data->img = mlx_xpm_file_to_image(data->mlx, "./img/player.xpm", &w, &w);
 
 
-	data->image.window = mlx_new_image(data->mlx, 1024, 512);
+	data->image.window = mlx_new_image(data->mlx, data->windowWidth, data->windowHeight);
 	data->image.data = mlx_get_data_addr(data->image.window, &data->image.bpp, &data->image.sizeline, &data->image.endian);
 
 
 	data->textures[0].image = mlx_xpm_file_to_image(data->mlx, "./img/enemy.xpm", &w, &w);
 	data->textures[0].data = mlx_get_data_addr(data->textures[0].image, &data->textures[0].bpp, &data->textures[0].sizeline, &data->textures[0].endian);
+	data->textures[1].image = mlx_xpm_file_to_image(data->mlx, "./img/enem2y.xpm", &w, &w);
+	data->textures[1].data = mlx_get_data_addr(data->textures[1].image, &data->textures[1].bpp, &data->textures[1].sizeline, &data->textures[1].endian);
 
 	data->wall_img = mlx_xpm_file_to_image(data->mlx, "./img/wall.xpm", &w, &w);
 	data->floor_img = mlx_xpm_file_to_image(data->mlx, "./img/floor.xpm", &w, &w);
 	data->enemy_img = mlx_xpm_file_to_image(data->mlx, "./img/enemy.xpm", &w, &w);
 	data->currentAngle = 0.0;
 	data->c_img = mlx_xpm_file_to_image(data->mlx, "./img/c.xpm", &w, &w);
-	data->mlx_win = mlx_new_window(data->mlx, 1024, 512, "faruktinaz raycasting");
+	data->mlx_win = mlx_new_window(data->mlx, data->windowWidth, data->windowHeight, "faruktinaz raycasting");
 
 	mlx_put_image_to_window(data->mlx, data->mlx_win, data->img, 16, 16);
 }
