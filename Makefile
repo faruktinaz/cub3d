@@ -1,2 +1,2 @@
 all:
-	gcc main.c mlx/libmlx.a -L./mlx -lmlx -L/usr/lib -I/usr/include -lXext -lX11 -lm -lz -o 2dcub -g -fsanitize=address
+	gcc main.c -framework AppKit -framework OpenGL -L./mlx -lmlx -o 2dcub -g #-fsanitize=address -g

@@ -4,10 +4,10 @@
 #include <math.h>
 #define DR 0.0174532925
 #define PI  3.14159265
-#define S 115
-#define W 119
-#define A 97
-#define D 100
+#define S 1
+#define W 13
+#define A 0
+#define D 2
 
 float px,py,pdx,pdy; // player position
 
@@ -112,7 +112,7 @@ unsigned int	get_pixel_in_texture(t_texture *texture, int x, int y)
 	char	*re;
 
 	re = texture->data + (y * texture->sizeline + x * (texture->bpp / 8));
-	return (*((unsigned int *)re));
+	return (*(unsigned int *)re);
 }
 
 
@@ -126,46 +126,41 @@ unsigned int	get_pixel_in_texture(t_texture *texture, int x, int y)
 
 
 void draw3DView(t_data *data, int numRays) {
-    float wallHeight = data->windowHeight * 10;
 
-    int windowWidth = data->windowWidth; // upd from data 
-    int windowHeight = data->windowHeight; // upd from data
-
-    for (int i = 0; i < numRays; i++) {
-        float distanceToWall = data->distances[i];
-		// printf("orta cizgi uzunluk -> %f en sağ çizgi uzunluk -> %f en sol --> %f \n", data->distances[29], data->distances[59], data->distances[0]);
-
-        float wallSize = (1 / distanceToWall) * wallHeight;
-        float wallThickness = (1 / distanceToWall);
-
-        int wallCenter = windowHeight / 2;
-
-        float wallStart = wallCenter - (wallSize) * 2;
-        float wallEnd = wallCenter + (wallSize) * 2;
-
-        int wallThicknessStart = i - (wallThickness);
-        int wallThicknessEnd = i + (wallThickness);
-
-        int wallColor = 0x402414;
-		if (wallStart < 0)
-			wallStart = 0;
-		if (wallEnd > wallHeight)
-			wallEnd = wallHeight - 1;
-		// printf("wallsize -> %f\n", wallSize);
-        for (int j = wallStart; j <= wallEnd; j++)
+	int height;
+	int start;
+	int end,j;
+	unsigned wallcolor;
+    for (int i = 0; i < numRays; i++)
+	{
+		height = (data->windowHeight * 10 / data->distances[i]) ;
+		start = (data->windowHeight / 2) - (height / 2);
+		end = (data->windowHeight / 2) + (height / 2);
+		if (start < 0)
+			j = 0;
+		else
+			j = start;
+        for (; j < end; j++)
 		{
-            for (int k = wallThicknessStart * 0.001670 * (windowWidth) ; k <= wallThicknessEnd * 0.001670 * (windowWidth); k++)
+			for (int k = (i * 0.001670); k < ((i + 1 )* 0.001670); k++)
 			{
-				float wall_tes = (((j) - (wallStart)) * 14) / (wallSize);
-				wallColor = get_pixel_in_texture(&data->textures[0], (data->wall_X[i]) * 64, wall_tes);
+				if (k >= 1280)
+					continue;
+				if (j >= data->windowHeight)
+					break;
+				float wall_tes = (j - start) * 64.0 / height;
+				// printf("wall_X -> %f wall_Y -> %f\n", data->wall_X[i], data->wall_Y[i]);
+				float x = data->wall_X[i] - floor(data->wall_X[i]);
+				float y = data->wall_Y[i] - floor(data->wall_Y[i]);
+				wallcolor = get_pixel_in_texture(&data->textures[0], (x) * 64, wall_tes);
 				if (data->wall_direction[i] == 1)
-					img_pix_put(&data->image, k, j, wallColor);
+					img_pix_put(&data->image, i, j, wallcolor);
 				else if (data->wall_direction[i] == 3)
-					img_pix_put(&data->image, k, j, wallColor);
+					img_pix_put(&data->image, i, j, wallcolor);
 				else
 				{
-					wallColor = get_pixel_in_texture(&data->textures[1], (data->wall_Y[i]) * 64, wall_tes);
-					img_pix_put(&data->image, k, j, wallColor);
+					wallcolor = get_pixel_in_texture(&data->textures[1], (y) * 64, wall_tes);
+					img_pix_put(&data->image, i, j, wallcolor);
 				}
 				// if (data->wall_direction[i] == 0)
 				// 	data->wall_direction[i] = data->wall_direction[i-1];
@@ -175,9 +170,9 @@ void draw3DView(t_data *data, int numRays) {
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, 0xFF0000);
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, 0xFFFFFF);
                 // 	mlx_pixel_put(data->mlx, data->mlx_win, k + (windowWidth / 2), j, wallColor);
-            }
-        }
-    }
+        	}
+    	}
+	}
 }
 
 int jd = 0;
@@ -240,20 +235,20 @@ void put_background(t_data *data)
 
 	x = 0;
 	y = 0;
-	while (y <= data->windowHeight / 2)
+	while (y < data->windowHeight / 2)
 	{
 		x = 0;
-		while (x <= data->windowWidth)
+		while (x < data->windowWidth)
 		{
 			img_pix_put(&data->image, x, y, 0x2b2a26);
 			x++;
 		}
 		y++;
 	}
-	while (y <= data->windowHeight)
+	while (y < data->windowHeight)
 	{
 		x = 0;
-		while (x <= data->windowWidth)
+		while (x < data->windowWidth)
 		{
 			img_pix_put(&data->image, x, y, 0x000000);
 			x++;
