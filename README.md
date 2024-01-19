@@ -11,7 +11,8 @@ then just type `"make linux"` or `"make macos"`.
 ![Screenshot from 2024-01-20 01-31-46](https://github.com/faruktinaz/cub3d/assets/114104599/1982bfa9-1ded-4c93-9bab-779af13ec365)
 
 <p align="center">
-![cub3dd](https://github.com/faruktinaz/cub3d/assets/114104599/3ffb4499-3ce3-405e-bc4f-f2a435176bda)
+![cub3dd](https://github.com/faruktinaz/cub3d/assets/114104599/704855c2-95f6-4305-99d9-6b2c7e2b333f)
+
 </p>
 
 - WASD to move 
