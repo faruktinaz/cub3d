@@ -12,7 +12,7 @@ then just type `"make linux"` or `"make macos"`.
 
 </br>
 <p align="center">
-<img src="./srcs/textures/cub3d.gif" width=75%>
+<img src="./srcs/texture/cub3d.gif" width=75%>
 </p>
 </br>
 
