@@ -3,8 +3,8 @@ SO srcs/texture/south.xpm
 WE srcs/texture/west.xpm
 EA srcs/texture/east.xpm
 
-C 255,141,255
-F 241,141,133
+C 81, 176, 219
+F 64, 41, 10
 
         11111111111 11111111111111
         10000000011100000000000011111
