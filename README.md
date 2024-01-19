@@ -10,9 +10,7 @@ then just type `"make linux"` or `"make macos"`.
 
 ![Screenshot from 2024-01-20 01-31-46](https://github.com/faruktinaz/cub3d/assets/114104599/1982bfa9-1ded-4c93-9bab-779af13ec365)
 
-<p align="center">
-  <img src="[demo.gif](https://github.com/faruktinaz/cub3d/assets/114104599/704855c2-95f6-4305-99d9-6b2c7e2b333f)" alt="animated" />
-</p>
+![cub3d](https://github.com/faruktinaz/cub3d/assets/114104599/8eff4214-17fe-46dd-8898-03893db4d59d)
 
 - WASD to move 
 - Left-Right directional keys to rotate camera
