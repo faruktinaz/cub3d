@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_parse_2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keopsfenks <keopsfenks@student.42.fr>      +#+  +:+       +#+        */
+/*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:31:44 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/12/05 01:32:37 by keopsfenks       ###   ########.fr       */
+/*   Updated: 2024/01/19 07:24:28 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,12 @@ void	parse_with_color(char *line, bool *flag, int *rule)
 	i = -1;
 	parse_with_color2(line, &check, rule, flag);
 	while (line[++i] != '\0')
+	{
 		if (ft_isdigit(line[i]))
 			break ;
+		else if (line[i] != ' ' && line[i] != 'F' && line[i] != 'C')
+			*flag = true;
+	}
 	check = 0;
 	parse_with_color3(line, &digit_check, flag, &i);
 	if (digit_check != 3)
@@ -75,10 +79,11 @@ void	map_invalid_char(char *line, bool **flag)
 	i = -1;
 	while (line[++i] != '\0')
 	{
-		if (line[i] != ' ' && line[i] != '1' \
+		if ((line[i] != ' ' && line[i] != '1' \
 			&& line[i] != '0' && line[i] != 'N' \
 			&& line[i] != 'S' && line[i] != 'E' \
-			&& line[i] != 'W' && line[i] != '\n')
+			&& line[i] != 'W' && line[i] != '\n') \
+			|| line[0] == 10)
 			**flag = true;
 	}
 }

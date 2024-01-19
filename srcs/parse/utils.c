@@ -6,7 +6,7 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 23:18:31 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/17 04:18:33 by segurbuz         ###   ########.fr       */
+/*   Updated: 2024/01/19 07:05:51 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,16 @@ void	find_tab_in_map(t_map *map, bool *flag)
 	while (map->line[++i])
 		if (map->line[i] == '\t')
 			*flag = true;
+}
+
+void	invalid_char2(t_map *tmp, bool *flag)
+{
+	int	i;
+
+	i = -1;
+	while (tmp && tmp->line[++i])
+	{
+		if (ft_isalpha(tmp->line[i]))
+			(*flag) = true;
+	}
 }

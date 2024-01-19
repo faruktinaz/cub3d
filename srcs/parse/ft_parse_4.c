@@ -6,7 +6,7 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/17 03:28:19 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/20 14:21:47 by segurbuz         ###   ########.fr       */
+/*   Updated: 2024/01/19 07:06:36 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	parse_with_color3(char *line, int *digit_check, bool *flag, int *i)
 	while (line[(*i)])
 	{
 		while (comma == 0 && line[(*i)] == ' ')
-			i++;
+			(*i)++;
 		if (!(ft_isdigit(line[(*i)]) || line[(*i)] == ' ' \
 			|| line[(*i)] == ',') && comma != 0)
 			*flag = true;
@@ -59,4 +59,27 @@ void	parse_with_color3(char *line, int *digit_check, bool *flag, int *i)
 		}
 		(*i)++;
 	}
+}
+
+void	check_file_name(char *name)
+{
+	int	len;
+
+	len = (int)ft_strlen(name);
+	if (len < 5)
+		ft_error();
+	if (name[len - 1] != 'b' || name[len - 2] != 'u' || name[len - 3] != 'c'
+		|| name[len - 4] != '.')
+		ft_error();
+}
+
+void	map_left_wall_check(t_map *map, bool **flag)
+{
+	int	i;
+
+	i = 0;
+	while (map->line[i] && map->line[i] == ' ')
+		i++;
+	if (map->line[i] != '1' && map->line[0] != '\n')
+		**flag = true;
 }

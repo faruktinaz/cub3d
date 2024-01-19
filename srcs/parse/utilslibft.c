@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilslibft.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ogenc <ogenc@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 14:18:48 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/13 14:51:10 by segurbuz         ###   ########.fr       */
+/*   Updated: 2024/01/17 16:05:25 by ogenc            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_map	*ms_lstlast(t_map *lst)
 	{
 		if (lst->next == NULL)
 			return (lst);
-		else
+		else if (lst->next != NULL)
 			lst = lst->next;
 	}
 	return (lst);
