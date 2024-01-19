@@ -10,7 +10,8 @@ then just type `"make linux"` or `"make macos"`.
 
 ![Screenshot from 2024-01-20 01-31-46](https://github.com/faruktinaz/cub3d/assets/114104599/1982bfa9-1ded-4c93-9bab-779af13ec365)
 
-![cub3d](https://github.com/faruktinaz/cub3d/assets/114104599/a72d4a7b-40a7-4a88-bacf-3734678304fd)
+![cub3dd](https://github.com/faruktinaz/cub3d/assets/114104599/9e788244-692f-45c2-b78f-1bcd980f9997)
+
 
 - WASD to move 
 - Left-Right directional keys to rotate camera
@@ -51,7 +52,9 @@ F 64, 41, 10
 When creating the rays using the DDA algorithm and mlx_put_pixel, for each step I divided the current position of the ray by 64 and checked if there is 1 (i.e. wall) in the map. If there is a wall, I subtracted the x and y coordinates of the last pixel of the line from the x and y coordinates of the character and used a simple Pythagorean theorem to store the lengths of the ray in an array.
 
 <img src="https://github.com/faruktinaz/cub3d/assets/114104599/07bce3cd-95df-4a71-ad68-c3d2e40a4728" width="600" height="500">
+
 ---
+
 <img src="https://github.com/faruktinaz/cub3d/assets/114104599/86f1f843-ec5c-46e0-8a79-ce774430a5f9" width="600" height="500">
 
 ```c
