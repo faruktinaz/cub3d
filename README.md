@@ -8,9 +8,9 @@ The goal of ``cub3d`` is to make *something* using raycasting (like [Wolfenstein
 When you clone the files, by default the linux version of the MLX library is included. If you want to run it on macOS, you need to download the macOS version of MLX and place it in the srcs/library/ file path. 
 then just type `"make linux"` or `"make macos"`.
 
-![[Pasted image 20240120013148.png]]
+![Screenshot from 2024-01-20 01-31-46](https://github.com/faruktinaz/cub3d/assets/114104599/1982bfa9-1ded-4c93-9bab-779af13ec365)
 
-![[cub3d 1.gif]]
+![cub3d](https://github.com/faruktinaz/cub3d/assets/114104599/a72d4a7b-40a7-4a88-bacf-3734678304fd)
 
 - WASD to move 
 - Left-Right directional keys to rotate camera
@@ -59,7 +59,3 @@ data->distances[data->jd] = (sqrt(pow(data->p_x + 8 - data->var.x_d, 2) + \ pow(
 				* cos(data->current_angle - data->var.pa));
 ```
 
-<img src="https://github.com/faruktinaz/cub3d/assets/114104599/07bce3cd-95df-4a71-ad68-c3d2e40a4728" width="600" height="500">
-
-
-<img src="https://github.com/faruktinaz/cub3d/assets/114104599/86f1f843-ec5c-46e0-8a79-ce774430a5f9" width="600" height="500">
